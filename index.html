@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>映画紹介サイト</title> 
+    <style>
+
+    html {
+        color: #ffffff;
+        
+    }
+        
+      body {
+        height: 100%;
+        
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+
+            overflow-x: hidden; 
+            z-index: -2;
+        }
+
+        canvas {
+            display: block;
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            z-index: +1;
+        }
+
+        .content h1 {
+            font-size: 3rem;
+            z-index: 1;
+            margin-bottom: 1rem;
+            z-index: +2;
+
+        }
+
+        .content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            z-index: +3;
+        }
+
+        a:link {
+            color: #0000EE;
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: #f3f3f3;
+            text-decoration: underline;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+</head>
+
+<body>
+    <!-- アニメーション用のCanvas -->
+    <canvas id="canvas"></canvas>
+
+    <!-- スクロール可能なコンテンツ -->
+    <div class="content">
+      <img src="image/logo.png" width="300" height="300" alt="会社ロゴ">
+      
+      
+       <u><h1>映画紹介サイト</h1></u>
+       <p>&nbsp;</p>
+       <h2>おすすめの映画三選</h2>
+      
+       <u><p>1.ARMAGEDDON(1998)</p></u>  
+      <img src="image/armage.jpg" width="200" alt="armagegazo">
+      <p>あらすじ</p>
+      <p>地球への衝突コースを取る小惑星が発見された。もしも、テキサス州の大きさにも匹敵するその小惑星が地球に激突すれば、人類の破滅は免れない。これを回避する方法はただひとつ、小惑星内部に核爆弾を設置し、内側から破壊するしかない。そしてその任務に選ばれたのは石油採掘のスペシャリストたちだった。刻々と迫る滅亡へのカウントダウンの中、人類の運命を委ねられた14人の男たちは小惑星へと飛び立つ</p>
+      <a href="https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%83%9E%E3%82%B2%E3%83%89%E3%83%B3_(%E6%98%A0%E7%94%BB)">詳しくはこちら</a>
+      
+      <p>&nbsp;</p>
+       <p>&nbsp;</p>  
+       <u><p>2.この世界の片隅に(2016)</p></u>
+       <img src="image/konokata.jpg" width="200" alt="konogazo">
+       <p>あらすじ</p>
+       <p>どこにでもある毎日のくらし。すずは、広島市江波で生まれた絵が得意な少女。昭和19（1944）年、20キロ離れた町・呉に嫁ぎ18歳で一家の主婦となったすずは、あらゆるものが欠乏していく中で、日々の食卓を作り出すために工夫を凝らす。だが、この頃戦争は進み、日本海軍の根拠地だった呉は、何度もの空襲に襲われる。庭先から毎日眺めていた軍艦たちが炎を上げ、市街が灰燼に帰してゆく。すずが大事に思っていた身近なものが奪われてゆく。それでもなお、毎日は続く。</p>
+        <a href="https://konosekai.jp/">公式HP</a>
+
+       <p>&nbsp;</p>
+       <p>&nbsp;</p>
+       <u><p>3.海底47m 古代マヤの死の迷宮(2019)</p></u>
+       <img src="image/same.jpg" width="200" alt="samegazo">
+       <p>あらすじ</p>
+      <p>内気な女子高生は、父の再婚でできた義理の姉と打ち解けられずにいた。考古学者の父はそんな娘を心配し、船中からサメを鑑賞するツアーに姉妹を誘う。やがて友人と合流した2人は、マヤ文明の遺跡が眠る海底洞窟へ...</p>
+      <a href="https://gaga.ne.jp/47m_maya/">公式HP</a>
+
+    </div>
+
+    <script>
+        // JavaScriptでThree.jsの背景アニメーションを設定
+        const particles = 4000;
+        const speed = 20;
+        const dim = 200; // Dimensions of particle volume
+
+    const canvas = document.getElementById('canvas');  
+    const renderer = new THREE.WebGLRenderer({canvas, preserveDrawingBuffer: true, alpha: true});
+    renderer.autoClearColor = false; // For trails
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(90, canvas.width/canvas.height, 0.1, 1000);
+    var vertices = [];
+
+    for ( let i = 0; i < particles; i ++ ) {
+  const x = dim*8 * (Math.random() - 0.5);
+  const y = dim*2 * (Math.random() - 0.5);
+  const z = -dim * Math.random();
+
+  vertices.push( x, y, z );
+}
+
+const starGeo = new THREE.BufferGeometry();
+starGeo.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ));
+let starMat = new THREE.PointsMaterial({
+  color: 0xffffff,
+  size: .5,
+  transparent: true, // For trails
+  depthTest: false // For trails
+});
+const starPoints = new THREE.Points( starGeo, starMat );
+
+// The whole fade plate is for trails
+const fadeGeo = new THREE.PlaneBufferGeometry(1, 1);
+const fadeMat = new THREE.MeshBasicMaterial({
+  color: 0x000000,
+  transparent: true,
+  opacity: .4,
+})
+const fadePlate = new THREE.Mesh(fadeGeo, fadeMat);
+fadePlate.material.renderOrder = -1; // Important!
+fadePlate.position.z = -.1;
+
+scene.add(fadePlate);
+scene.add(starPoints);
+requestAnimationFrame(draw);
+
+function draw() {
+  if (canvas.height !== canvas.clientHeight ||
+     canvas.width !== canvas.clientWidth) {
+    camera.aspect = canvas.clientWidth/canvas.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight, false)
+  }
+  starGeo.attributes.position.needsUpdate = true;
+  let p = starGeo.attributes.position.array;
+  for (let i = 0; i < p.length; i+=3) {
+    const x = Math.abs(p[i]);
+    const y = Math.abs(p[i+1]);
+    const z = p[i+2];
+    if (z >= 0) {
+      p[i] = dim*8 * (Math.random() - 0.5);
+      p[i+1] = dim*2 * (Math.random() - 0.5);
+      p[i+2] = -dim;
+    } else {
+      p[i+2] += -speed/p[i+2];
+    }
+  }
+  
+  renderer.render(scene, camera);
+  requestAnimationFrame(draw);
+}
+    </script>
+</body>
+</html>
